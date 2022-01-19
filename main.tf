@@ -1,23 +1,24 @@
 terraform {
   required_providers {
     docker = {
-      source  = "kreuzwerker/docker"
-      version = "2.15.0"
+      source = "kreuzwerker/docker"
+      version = "~> 2.13.0"
     }
   }
 }
 
-provider "docker" {
-  host = "unix:///var/run/docker.sock"
+provider "docker" {}
+
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = false
 }
 
-# Pulls the image
-resource "docker_image" "ubuntu" {
-  name = "ubuntu:latest"
-}
-
-# Create a container
-resource "docker_container" "foo" {
-  image = docker_image.ubuntu.latest
-  name  = "foo"
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.latest
+  name  = "tutorial"
+  ports {
+    internal = 80
+    external = 8000
+  }
 }
